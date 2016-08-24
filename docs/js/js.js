@@ -1,0 +1,15 @@
+$(function(){
+
+    $.ajax({
+		url: "maomao.json",
+		dataType: "json",
+		success: function(data){
+			for(var i=0;i<data.length;i++){
+				var data_title = data[i].title;
+				var data_link = data[i].link;
+				$(".main_con_list ul").append("<li><a href=" + data_link + ">" + data_title + "</a></li>");
+			}
+		}
+	});
+
+});
