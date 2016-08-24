@@ -7,6 +7,7 @@ $(function(){
 			for(var i=0;i<data.length;i++){
 				var data_title = data[i].title;
 				var data_link = data[i].link;
+				console.log(data_title);
 				var data_niubi = "";
 				for(var i = 0; i < data_title.length; i++){
 					data_niubi += "<span>" + data_title.substr(i, i+1) + "</span>";
