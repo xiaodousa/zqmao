@@ -10,7 +10,7 @@ $(function(){
 				console.log(data_title);
 				var data_niubi = "";
 				for(var i = 0; i < data_title.length; i++){
-					data_niubi += "<span>" + data_title.substr(i, i+1) + "</span>";
+					data_niubi += "<span>" + data_title.substring(i, i+1) + "</span>";
 				}
 				console.log(data_niubi);
 				$("logo ul").append("<li><a class='link link--yaku' href=" + data_link + ">" + data_niubi + "</a></li>");
