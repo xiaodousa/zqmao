@@ -1,7 +1,7 @@
 $(function(){
 
     $.ajax({
-		url: "list.json",
+		url: "https://zqmao.github.io/blog/list.json",
 		dataType: "json",
 		success: function(data){
 			for(var i=0;i<data.length;i++){
