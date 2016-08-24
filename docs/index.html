@@ -7,34 +7,16 @@
     <title></title>
     <meta name="keywords" content="">
     <meta name="description" content="">
-	<link rel="stylesheet" href="css/font-awesome.min.css"> 
-	<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css"> 
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" />
-	<script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
-	<script src="js/bigSlide.js"></script>
-	<script>
-		$(document).ready(function() {
-			$('.menu-link').bigSlide();
-		});
-		$(function(){
-
-    $.ajax({
-		url: "list.json",
-		dataType: "json",
-		success: function(data){
-			for(var i=0;i<data.length;i++){
-				var data_title = data[i].title;
-				var data_link = data[i].link;
-				var data_niubi = "";
-				for(var j = 0; j < data_title.length; j++){
-					data_niubi += "<span>" + data_title.substr(j, 1) + "</span>";
-				}
-				$(".logo ul").append("<li><a class='link link--yaku' href=" + data_link + ">" + data_niubi + "</a></li>");
-			}
-		}
-	});
-
-});
+    <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+    <script src="js/bigSlide.js"></script>
+    <script type="text/javascript" src="js/js.js"></script>
+    <script>
+    	$(document).ready(function() {
+    		$('.menu-link').bigSlide();
+    	});
     </script>
     
 </head>
