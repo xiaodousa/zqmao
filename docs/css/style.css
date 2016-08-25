@@ -120,6 +120,7 @@ html{
 	font-size: 20px;color: #fff;
 	text-align: center;
 	background: #000;
+	line-height:60px; 
 }
 .main_con_right .article{
 	max-width: 720px;
