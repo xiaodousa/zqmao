@@ -1,7 +1,9 @@
 var ZX = {};
 
 $(function(){
-	
+	var path = window.location.pathname;
+	var index = path.lastIndexOf("/");
+	var fileName = path.substring(index + 1, path.length);
     $.ajax({
 		url: "https://zqmao.github.io/blog/list.json",
 		dataType: "json",
@@ -14,8 +16,11 @@ $(function(){
 				for(var j=0;j<data_title.length;j++){
 					data_niubi += "<span>"+data_title.substr(j,1)+"</span>"
 				}
-
-				$(".articleName ul").append("<li><a href=" + data_link + ">" + data_niubi + "</a></li>");
+				if(fileName == data_link){
+					$(".articleName ul").append("<li><a class='active' href=" + data_link + ">" + data_niubi + "</a></li>");
+				}else{
+					$(".articleName ul").append("<li><a href=" + data_link + ">" + data_niubi + "</a></li>");
+				}
 			}
 		}
 	});
