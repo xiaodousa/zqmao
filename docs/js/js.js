@@ -17,7 +17,8 @@ $(function(){
 					data_niubi += "<span>"+data_title.substr(j,1)+"</span>"
 				}
 				if(fileName == data_link){
-					$(".articleName ul").append("<li class='active'><a href=" + data_link + ">" + data_niubi + "</a></li>");
+					//正在看的，被选中的
+					$(".articleName ul").append("<li><a href=" + data_link + ">" + data_niubi + "</a></li>");
 				}else{
 					$(".articleName ul").append("<li><a href=" + data_link + ">" + data_niubi + "</a></li>");
 				}
