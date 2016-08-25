@@ -79,6 +79,14 @@ html{
 }
 .articleName li{
 	margin-left: 10px;
+	position: relative;
+}
+.articleName li.active:before{
+	content: "";
+	width: 6px;height: 6px;
+	background: #fff;
+	border-radius: 50%;
+	position: absolute;left: -10px;top: 11px;
 }
 .articleName li a{
 	display: block;
@@ -88,9 +96,11 @@ html{
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.articleName li a:hover{
+.articleName li a:hover,.articleName li.active a{
 	color: #fff;
 }
+
+
 
 
 /*主要内容*/
