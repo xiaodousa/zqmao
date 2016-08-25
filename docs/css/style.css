@@ -35,7 +35,7 @@ html{
 /*侧边栏*/
 .list{
 	background: #000;
-	position: absolute;left: -200px;top: 0;bottom: 0;
+	position: fixed;left: -200px;top: 0;bottom: 0;
 	transition: left 0.5s;
 }
 .list.out{
