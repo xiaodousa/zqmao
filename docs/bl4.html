@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="shortcut icon" href="">
+    <title></title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<div class="list">
+		<div class="list_con">
+			<div class="img">
+				<img src="img/head.jpg" alt="">
+			</div>
+			<p class="authorName">毛神</p>
+			<div class="articleName">
+				<p class="title">文章列表</p>
+	    		<ul></ul>
+			</div>
+			
+	    	<a href="javascript:;" class="list_bt" id="list_bt"></a>
+		</div>
+	</div>
+    <div class="main">
+    	<div class="main_con clearfix">
+    		<div class="main_con_left"></div>
+	    	<div class="main_con_right">
+	    		<div class="header">
+	    			<span height="60">我陪你走到最后，能不能不要回头</span>
+	    		</div>
+	    		<div class="article">
+	    			<h1>android，java获取MP3文件信息（作者，专辑等）</h1>
+	    			<div class="tips">
+	    				<span class="time">2016年9月1日10:12:38</span>
+	    				<span class="author"><b>by</b>毛神</span>
+	    			</div>
+	    			<p class="article_con">
+接着上一篇文章， 上一篇把ndk开发遍历手机文件分享了一下。遍历出来的MP3文件，我需要展示在android的listview里面，想展示的好看一点，结果发现又是一个坑。
+
+根据mp3文件，获取作者啊专辑啊，不难，但是会出现各种乱码，烦不胜烦。<br/>
+
+1，先普及下这个的知识，MP3文件本身是没有这些信息的，但是很显然没有信息，用户体验不行，所以在某某年（百度百科ID3）有人就加了一个ID3V1放在MP3文件的后面；再后来因为某某原因，有人把这个升级了，变成ID3V2放在了MP3的前面（当然ID3V1还在的）。所以现在有些文件是V1的，有些文件是V2的，在获取信息之前要先判断，是V1，还是V2, 当然还有一些MP3是两个都不存在的，一般就是我们看到的未知。如下图<br/>
+<img src="http://upload-images.jianshu.io/upload_images/2710037-765c1ec8ab385aef.png"/><br/>
+
+2，然后我们讲一下网络上面的资源<br/>
+
+     （1），https://sourceforge.net/projects/javamusictag/
+
+这个地址是一个好资源，里面有jar工具包，也有源代码；<br/>
+
+     （2），http://www.ulduzsoft.com/2012/07/parsing-id3v2-tags-in-the-mp3-files/
+
+这里面是一个java文件，解析V2的，没有解析V1。
+
+以上两个都是需要做修改的才能被我们使用，否则就是要么乱码，要么不解析。
+
+我们先说第一个资源吧：<br/>
+
+（1），这个是比较全面的JAR，还可以写信息到文件里面去，如果你使用这个jar的时候，获取ID3V1出现乱码了，你需要修改的是org.farng.mp3.id3.ID3v1_1或者org.farng.mp3.id3.ID3v1里面的read方法，默认里面是ISO-8859-1不是适合所有人的，比如我就改成了GBK。          如果你使用这个jar来获取ID3V2，那么就需要对org.farng.mp3.object.AbstractMP3Object这个文件做修改，他里面的readByteArray(byte[] arr, int offset)这个方法解析我的音乐文件，都是乱码（可能别人可以使用），具体改动是把里面的方法内容替换成以下：
+					</p>
+					<div class="code">
+String charset;
+int charcode = arr[0];//获取编码标志？
+if ( charcode == 0 ){
+	charset = "GBK";
+}else if ( charcode == 3 ){
+	charset = "UTF-8";
+}else{
+	charset = "UTF-16" ;
+}
+try {
+	String con = new String(arr, 1, arr.length - 1, charset);//编码
+	//这以下都是为了解码不错而写的，没有依据
+	offset--;
+	if (offset >= con.length()) {
+		offset = con.length() - 1;
+	}
+	if (offset < 0) {
+		offset = 0;
+	}
+	if ((offset == 0) && (con.length() == 0)) {
+		con = " ";
+	}
+	//这以上都是为了解码不错而写的，没有依据
+	readString(con, offset);//jar里面 的方法
+} catch (UnsupportedEncodingException e) {
+	e.printStackTrace();
+}
+					</div>
+
+					<p class="article_con">
+修改后以后，重新打包成jar，就可以使用这个新的jar了。<br/><br/>
+
+（2）如果你使用第二个网络资源，这个资源只有一个java文件，也比较简单，只是解析了V2.如果我们需要全面一点，让他也可以解析V1，就需要对他做改动
+这个文件里面有一个parse方法，这个方法里面有一段如下：
+
+	    			</p>
+					<div class="code">
+if( headerbuf[0] !='I'|| headerbuf[1] !='D'|| headerbuf[2] !='3'){
+       file.close();
+       returnfalse;
+}
+					</div>
+					<p class="article_con">
+这一段是为了判断是不是V2（如果是V2的话，开头三个字符应该是ID3，另，V1部分开头三个字符是TAG），从上面的代码可以看出，如果不是V2，就直接结束了，而我们想要的是，如果不是V2，我们就再去试试，是不是V1，如果也不是V1，那么我们只好把作者啊专辑啊，都写成未知了。所以，我们在file.close();前面加一个方法getID3V1(file);<br/>
+方法内容如下（从网上拷贝的）：
+					</p>
+					<div class="code">
+private void getID3V1(RandomAccessFile file) {
+	byte[] buf = new byte[128];// 初始化标签信息的byte数组
+	try {
+		file.seek(file.length() - 128);// 移动到文件MP3末尾
+		file.read(buf);// 读取标签信息
+		file.close();// 关闭文件
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	}// 随机读写方式打开MP3文件
+	catch (IOException e) {
+		e.printStackTrace();
+	}
+	if (buf.length != 128) {// 数据长度是否合法
+		try {
+			throw new Exception("MP3标签信息数据长度不合法!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	String tag = "";
+	try {
+		tag = new String(buf, 0, 3, "gbk");
+	} catch (UnsupportedEncodingException e1) {
+		e1.printStackTrace();
+	}
+	if (!"TAG".equalsIgnoreCase(tag)) {// 标签头是否存在
+		try {
+			throw new Exception("MP3标签信息数据格式不正确!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	try {
+		m_title = new String(buf, 3, 30, "gbk").trim();
+		m_artist = new String(buf, 33, 30, "gbk").trim();// 歌手名字
+		m_floder = new String(buf, 63, 30, "gbk").trim();// 专辑名称
+		m_tyer = new String(buf, 93, 4, "gbk").trim();// 出品年份
+		m_comm = new String(buf, 97, 28, "gbk").trim();// 备注信息
+		System.out.println("作者:" + m_artist);
+		System.out.println("标题:" + m_title);
+		System.out.println("专集:" + m_floder);
+		System.out.println("音轨:" + m_trck);
+		System.out.println("年代:" + m_tyer);
+		System.out.println("类型:" + m_tcon);
+		System.out.println("备注1:" + m_comm);
+	} catch (UnsupportedEncodingException e) {
+		e.printStackTrace();
+	}
+}
+					</div>
+					<p class="article_con">
+当然从我贴的代码可以看到，我又使用了GBK编码，这个资源2里面的有一个方法parseTextField里面也有ISO-8859-1，在我这边，我也改成了GBK，然后可以使用。<br/>
+
+总结下，网络上面的资源其实很多，但是很乱，比如我们想要找一个可以解决编码问题的资源，你不会那么巧，刚刚好就找到了你想要的，你需要有耐心，慢慢找，一个个的测试，最后你觉得最靠谱的方法，你再去不断的调试，不断的修改。最终肯定能把资源变成适合你的资源。
+<br/>
+<br/>
+本文和上一篇文章使用的是一个项目
+<br/>
+地址：http://download.csdn.net/detail/xiaodousa/9618128
+<br/>
+其实这次经历中有很多不明白的地方，比如，int charcode = arr[0];//获取编码标志？
+<br/>
+以及offset是否有什么依据，望大神指教
+<br/>
+以上
+					</p>
+	    		</div>
+	    	</div>
+    	</div>
+    </div>
+    <div class="footer"></div>
+</body>
+<script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+<script type="text/javascript" src="js/js.js"></script>
+</html>

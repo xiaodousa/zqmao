@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="shortcut icon" href="">
+    <title></title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<div class="list">
+		<div class="list_con">
+			<div class="img">
+				<img src="img/head.jpg" alt="">
+			</div>
+			<p class="authorName">毛神</p>
+			<div class="articleName">
+				<p class="title">文章列表</p>
+	    		<ul></ul>
+			</div>
+			
+	    	<a href="javascript:;" class="list_bt" id="list_bt"></a>
+		</div>
+	</div>
+    <div class="main">
+    	<div class="main_con clearfix">
+    		<div class="main_con_left"></div>
+	    	<div class="main_con_right">
+	    		<div class="header">
+	    			<span height="60">睡着的大提琴，安静的旧旧的</span>
+	    		</div>
+	    		<div class="article">
+	    			<h1>android NDK开发文件列表</h1>
+	    			<div class="tips">
+	    				<span class="time">2016年9月1日10:00:26</span>
+	    				<span class="author"><b>by</b>毛神</span>
+	    			</div>
+	    			<p class="article_con">
+NDK开发一开始接触的就是官方给的demo：HelloJni
+
+不过里面的代码相当简单啦，然后我想写一个C语言来遍历手机的文件夹，然后android展示出来，功能就是这样了。
+
+首先要去解决的问题就是怎么遍历；然后遇到的问题就是怎么把遍历出来的文件列表返回给android代码，直接贴代码吧<br/><br/>
+					</p>
+					<div class="code">
+int total = 0;
+char filePaths[100][256] = {""};
+void searchdir(const char *path, const char *tempPath) {
+	DIR *dp;
+	struct dirent *dmsg;
+	if ((dp = opendir(path)) != NULL) {
+		chdir(path);
+		while ((dmsg = readdir(dp)) != NULL) {
+			if (!strcmp(dmsg->d_name, ".") || !strcmp(dmsg->d_name, "..")) {
+				continue;
+			}
+			if (dmsg->d_type == DT_DIR) {
+				char *filePath = malloc(strlen(tempPath) + strlen(dmsg->d_name) + 20);
+				strcpy(filePath, tempPath);
+				strcat(filePath, "/");
+				strcat(filePath, dmsg->d_name);
+				searchdir(dmsg->d_name, filePath);
+				free(filePath);
+			} else {
+				int size = strlen(dmsg->d_name);
+				if (strcmp(dmsg->d_name + (size - 4), ".mp3") == 0) {
+					char *filePath = malloc(strlen(tempPath) + strlen(dmsg->d_name) + 20);
+					strcpy(filePath, tempPath);
+					strcat(filePath, "/");
+					strcat(filePath, dmsg->d_name);
+					strcpy(filePaths[total], filePath);
+					free(filePath);
+					total++;
+				}
+			}
+		}
+		chdir("..");
+		closedir(dp);
+	}
+}
+					</div>
+					<p class="article_con">
+以上是遍历手机的方法，其中，if (strcmp(dmsg->d_name + (size - 4), ".mp3") == 0)这个判断是，只选择mp3文件。二维数组filePaths，是存放所有遍历结果
+执行完这个方法后，就是要把结果传回去的过程了
+					</p>
+					<div class="code">
+jobjectArray  Java_com_example_hellojni_HelloJni_stringFromJNI(JNIEnv* env, jobject thiz) {
+	total = 0;
+	clock_t tick_start, tick_end;
+	double t;
+	char *dirpath = "/storage/emulated/0/";//初始路径
+	tick_start = clock();//计时开始
+	searchdir(dirpath, dirpath);
+	tick_end = clock();//计时结束
+	double dtime = (double) (tick_end - tick_start) / CLOCKS_PER_SEC;//花费的时间
+	jclass objClass = (*env)->FindClass(env, "java/lang/String");
+	jobjectArray texts = (*env)->NewObjectArray(env, (jsize) ARRAY_LENGTH, objClass, 0);
+	jstring jstr;
+	int i = 0;
+	for (i = 0; i < ARRAY_LENGTH; i++) {
+		jstr = (*env)->NewStringUTF(env, filePaths[i]);
+		(*env)->SetObjectArrayElement(env, texts, i, jstr); //必须放入jstring
+	}
+	return texts;
+}
+					</div>
+					<p class="article_con">
+其中变量dtime就是花费的时间，经过我的实验，C遍历时间比java要快很多，我扫描3k个文件夹，C花费3s左右，java花了20多s.
+变量dirpath是我写死的扫描初始路径，应该因人而异，也可以由java那边传参数过来。
+C这边就算是写完了！<br/>
+java这边用String[] aa = stringFromJNI();接收下就可以了.<br/><br/>
+下一篇文章，我会分享下，java获取MP3文件的作者，专辑等信息遇到的乱码问题，两篇文章使用的是一个项目					
+地址:<a href="http://download.csdn.net/detail/xiaodousa/9618128" target="_blank">点我CSDN下载资源</a>
+	    			</p>
+	    		</div>
+	    	</div>
+    	</div>
+    </div>
+    <div class="footer"></div>
+</body>
+<script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+<script type="text/javascript" src="js/js.js"></script>
+</html>
