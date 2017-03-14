@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="shortcut icon" href="">
+    <title></title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<div class="list">
+		<div class="list_con">
+			<div class="img">
+				<img src="img/head.jpg" alt="">
+			</div>
+			<p class="authorName">毛神</p>
+			<div class="articleName">
+				<p class="title">文章列表</p>
+	    		<ul></ul>
+			</div>
+			
+	    	<a href="javascript:;" class="list_bt" id="list_bt"></a>
+		</div>
+	</div>
+    <div class="main">
+    	<div class="main_con clearfix">
+    		<div class="main_con_left"></div>
+	    	<div class="main_con_right">
+	    		<div class="header">
+	    			<span height="60">Android自定义View</span>
+	    		</div>
+	    		<div class="article">
+	    			<h1>自定义SeekBar模拟QQ多段录制视频</h1>
+	    			<div class="tips">
+	    				<span class="time">2016年8月26日11:51:21</span>
+	    				<span class="author"><b>by</b>毛神</span>
+	    			</div>
+	    			<p class="article_con">
+之前也处理过android方法数超出65536的问题，不过当时着急，没有采用分包的解决方式，直接在需要使用到jar包的时候，动态加载，原理主要是DexClassLoader。这次这个问题又报出来了，没办法，正好时间充裕，就研究研究这个分包。
+
+        android官方有分包的方案，即android-support-multidex.jar，本文，主要讲的是怎么在Eclipse上面使用这个jar。
+
+        网上有太多文章了，可是，我看了绝大多数的，都并没有让我的Eclipse成功产生一个包。整个过程分为下面几步：
+
+1，安装Gradle
+
+2，Eclipse安装Gradle插件
+
+3，Eclipse导出Gradle项目（会生成build.gradle等文件）
+
+4，Config项目（Eclipse右击，如果已经是gradle项目，就没有这个Config）
+
+5，配置gradle
+
+6，配置multidex
+
+7，遇到的问题
+
+详细内容如下：
+
+1，安装Gradle
+
+        我本来以为安装软件嘛，肯定得新的，新的肯定解决了旧版本不少bug，所以兴冲冲的下载了3.4，结果，maven里面还没到这个版本，导致，后面的Config步骤走不通。最终，我在下载了五个版本的gradle后，发现2.14.1版本，能够解决问题（选择版本很重要，安装过程很无脑）
+
+2，Eclipse安装插件
+
+         我记得我下载的地址是：http://download.eclipse.org/buildship/updates/e46/releases/1.0
+
+Eclipse里面->Help->Install New SoftWare，输入这个地址，就可以下载啦（插件不难，需要翻墙）
+
+3，Eclipse导出Gradle项目
+
+         安装完插件后，我们重启下eclipse就可以看到，原先的项目，右击，Export，里面会多一个选项：Generate Gradle build files.然后一直继续，有一个地方，需要你Force overriding of existing files。然后你的项目里面，就多出来一些文件build.gradle等文件（零要点）
+
+4，Config项目
+
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-7484514ad5a98fbb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+如果这个时候直接config（上图就是我说的config），eclipse会去下载一些gradle-all的包比如：
+
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-2b2cff901c5c2b3d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+Eclipse正在下载
+eclipse里面下载的速度，不知道为啥，特别慢，而且这个包的版本，和我们的也不是很符合，需要我们先把项目里面的gradle文件夹下面的wrapper文件夹下面的gradle-wrapper.properties里面的distributionUrl修改下改成2.14.1-all。然后config，会很慢，或者你现在可以去我们的Gradle安装目录下面E:\gradle-2.14.1\wrapper\dists
+
+可以看到eclipse正在下载这个版本的内容，我的eclipse速度慢，我就直接把这个all.zip在浏览器中下载，然后直接拷贝到这个文件夹（E:\gradle-2.14.1\wrapper\dists\gradle-2.14.1-all\9ossqmv60fyibylheubs4isy9）里面去，然后解压。再去config，就不需要下载了。
+
+这个时候，我这边会出现一个问题，提示版本不匹配，原因是，我的项目里面的build.gradle里面的classpath'com.android.tools.build:gradle:0.12.+'或者比这个大
+
+我改成classpath'com.android.tools.build:gradle:2.1.+'就好了。修改完后，重新config会在E:\gradle-2.14.1\caches目录下，创建一个modules-2文件夹，里面会下载很多东西，这个过程很漫长。（小插曲）
+
+这样完了以后，我们的项目就变成gradle项目了，经过我的尝试，这个时候，如果报，这个项目不是主项目错误，那么就把目前的项目都关闭掉，然后重新import 项目（gradle项目），我在这个时候，出现了原先的项目全部变成了java项目这样的问题，别着急，关闭项目，再import一次android 项目，就全部正常了。（这儿的问题又多又烦）
+
+5，我曾经天真的以为，这样以后，就可以直接run项目了，我的分包问题就解决了。。。图样！
+
+你这个是使用eclipse的run as Android Application和我们没有安装插件，是一样的。
+
+得使用另外一种run的方式，在你的Eclipse->Window找到GradleTasks里面找到你的项目
+
+右击你的项目Open Gradle run Configurations
+
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-14fef78d6f7e622a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+会进入一个配置页面
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-b18547af38074910.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+
+Gradle Task里面输入一个命令：clean （或者再加一个assemble）然后点击ok就可以了
+
+然后在你的eclipse的项目里面右击项目 Run as->run configurations,
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-00ba76d3700d2476.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+找到我们的项目（上图中，clean（清理） 后面可以接一个assemble（打包）），直接run。如果一切正常，那么，就会在我们项目目录下面产生一个build文件夹，build\outputs\apk这个路径下面，会多三个包xxx-debug.apk就是我们运行的包。
+
+当然，我是遇到了问题的，run后，报这个错误：
+
+Could not find tools.jar. Please check that C:\Program Files\Java\jre1.8.0_45 contains a valid JDK installation.
+
+这个时候就需要我们在run之前做一个配置，上图中，的JAVA HOME
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-bec330eac48909c5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+我改成这样，再运行就成功了。
+
+如果我们大家的项目能这么简单的搞定，就没有必要写这个文章了。（有司机，这段路不崎岖）
+
+6，配置分包
+
+关于这个配置，网上太多了，我也拷贝了一份，如果你已经配置好，就直接跳过吧
+
+（1）我们自定义的Application需要继承MultiDexApplication，或者在oncreate里面调用MultiDex.install(this)。
+
+（2）需要添加的内容如下：
+
+dependencies {
+
+        compile 'com.android.support:multidex:1.0.0'
+
+}
+
+android {
+
+        compileSdkVersion 20
+
+        buildToolsVersion "23.0.1"//这个地方如果是20.0.0，就会报下面的错误
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-48fb2640a32a0ecf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+
+        configurations{
+
+               all*.exclude group: 'com.android.support', module: 'multidex'
+
+         }
+
+        defaultConfig {
+
+                  minSdkVersion 9
+
+                  targetSdkVersion 19
+
+                  multiDexEnabled true
+
+        }
+
+       dexOptions {
+
+               preDexLibraries = false
+
+               javaMaxHeapSize "2g"//（后面会解释这行的意义）注释1
+
+        }
+
+        lintOptions {
+
+               checkReleaseBuilds false
+
+              abortOnError false//（后面会解释这行的意义）注释2
+
+          }
+
+         afterEvaluate{
+
+             tasks.matching{
+
+                       it.name.startsWith('dex')
+
+             }.each{dx->
+
+                       if(dx.additionalParameters == null) {
+
+                            dx.additionalParameters= ['--multi-dex']
+
+                       }else{
+
+                             dx.additionalParameters+= '--multi-dex'
+
+                        }
+
+             }
+
+      }
+
+}（网上一堆堆）
+
+注释1：如果不加，大一点的项目，assemble的时候，会内存溢出，你看到的现象是，项目在不停的反复的没完的Launching delegate，最终导致内存溢出（加大为2g后。。。不会报错了而已）
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-32d8f512349fc249.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+Launching delegate
+注释2：assemble项目过程中，遇到的一些lint错误，就会中断打包，加上这个，就可以了，直到打包完成
+
+
+
+其实到这里，项目使用Android Studio打开，已经可以run了，可是，Eclipse不行，他有他的任性。
+
+7，遇到的问题
+
+我们来讲讲Eclipse的support-v4，太烦人
+
+我们的项目，会引用一些开源框架，比如说silding_menu_library，这个开源项目里面，就包含了support-v4的jar包，然后我们主项目，也有这样的jar包，或者，还有别的需要引用的，也包含这个jar。那么问题来了。当我们assemble的时候，会报包冲突。部分截图如下
+
+
+<img src="http://upload-images.jianshu.io/upload_images/2710037-4c802dd951f3b51c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
+
+意思就是，你那么多项目，都有这个jar包，我打包的时候，冲突了重复了。
+
+然后，我就去百度，发现好多人啊，好多人遇到这个问题。解决方案缺很单一，无非是exclude例如all*.exclude group: 'com.android.support', module: 'support-v4'
+
+我没有去Android Studio上面去测试了，我只是在Eclipse上面测试，发现，并没有什么用。
+
+该冲突还是冲突。最终（真累，好几次想要放弃，毕竟Android Studio已经可以运行了），解决方案是，改用provided，如下：
+
+silding_menu_library里面的build.gradle这样配置dependencies
+
+compile fileTree(dir: 'libs', exclude: ['android-support*.jar'], include: '*.jar')
+
+provided files("libs/android-support-v4.jar")
+
+含义就是编译的时候，编译support-v4包，但是打包的时候，不要support-v4。
+
+至此，我的大一点的项目，也可以assemble了。从安装gradle到最终assemble，花了3天。（这一段，是重点）
+
+以上
+	    			</p>
+	    		</div>
+	    	</div>
+    	</div>
+    </div>
+    <div class="footer"></div>
+</body>
+<script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+<script type="text/javascript" src="js/js.js"></script>
+</html>
