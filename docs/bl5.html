@@ -32,7 +32,7 @@
 	    			<span height="60">Android自定义View</span>
 	    		</div>
 	    		<div class="article">
-	    			<h1>自定义SeekBar模拟QQ多段录制视频</h1>
+	    			<h1>Eclipse中使用multidex解决分包</h1>
 	    			<div class="tips">
 	    				<span class="time">2016年8月26日11:51:21</span>
 	    				<span class="author"><b>by</b>毛神</span>
@@ -42,45 +42,45 @@
 
         android官方有分包的方案，即android-support-multidex.jar，本文，主要讲的是怎么在Eclipse上面使用这个jar。
 
-        网上有太多文章了，可是，我看了绝大多数的，都并没有让我的Eclipse成功产生一个包。整个过程分为下面几步：
+        网上有太多文章了，可是，我看了绝大多数的，都并没有让我的Eclipse成功产生一个包。整个过程分为下面几步：<br/>
 
-1，安装Gradle
+1，安装Gradle<br/>
 
-2，Eclipse安装Gradle插件
+2，Eclipse安装Gradle插件<br/>
 
-3，Eclipse导出Gradle项目（会生成build.gradle等文件）
+3，Eclipse导出Gradle项目（会生成build.gradle等文件）<br/>
 
-4，Config项目（Eclipse右击，如果已经是gradle项目，就没有这个Config）
+4，Config项目（Eclipse右击，如果已经是gradle项目，就没有这个Config）<br/>
 
-5，配置gradle
+5，配置gradle<br/>
 
-6，配置multidex
+6，配置multidex<br/>
 
-7，遇到的问题
+7，遇到的问题<br/>
 
-详细内容如下：
+详细内容如下：<br/>
 
-1，安装Gradle
+1，安装Gradle<br/>
 
-        我本来以为安装软件嘛，肯定得新的，新的肯定解决了旧版本不少bug，所以兴冲冲的下载了3.4，结果，maven里面还没到这个版本，导致，后面的Config步骤走不通。最终，我在下载了五个版本的gradle后，发现2.14.1版本，能够解决问题（选择版本很重要，安装过程很无脑）
+        我本来以为安装软件嘛，肯定得新的，新的肯定解决了旧版本不少bug，所以兴冲冲的下载了3.4，结果，maven里面还没到这个版本，导致，后面的Config步骤走不通。最终，我在下载了五个版本的gradle后，发现2.14.1版本，能够解决问题（选择版本很重要，安装过程很无脑）<br/>
 
-2，Eclipse安装插件
+2，Eclipse安装插件<br/>
 
          我记得我下载的地址是：http://download.eclipse.org/buildship/updates/e46/releases/1.0
 
-Eclipse里面->Help->Install New SoftWare，输入这个地址，就可以下载啦（插件不难，需要翻墙）
+Eclipse里面->Help->Install New SoftWare，输入这个地址，就可以下载啦（插件不难，需要翻墙）<br/>
 
-3，Eclipse导出Gradle项目
+3，Eclipse导出Gradle项目<br/>
 
-         安装完插件后，我们重启下eclipse就可以看到，原先的项目，右击，Export，里面会多一个选项：Generate Gradle build files.然后一直继续，有一个地方，需要你Force overriding of existing files。然后你的项目里面，就多出来一些文件build.gradle等文件（零要点）
+         安装完插件后，我们重启下eclipse就可以看到，原先的项目，右击，Export，里面会多一个选项：Generate Gradle build files.然后一直继续，有一个地方，需要你Force overriding of existing files。然后你的项目里面，就多出来一些文件build.gradle等文件（零要点）<br/>
 
-4，Config项目
+4，Config项目<br/>
 
 
 
 <img src="http://upload-images.jianshu.io/upload_images/2710037-7484514ad5a98fbb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
 
-如果这个时候直接config（上图就是我说的config），eclipse会去下载一些gradle-all的包比如：
+如果这个时候直接config（上图就是我说的config），eclipse会去下载一些gradle-all的包比如：<br/>
 
 
 
@@ -94,20 +94,20 @@ eclipse里面下载的速度，不知道为啥，特别慢，而且这个包的�
 
 我改成classpath'com.android.tools.build:gradle:2.1.+'就好了。修改完后，重新config会在E:\gradle-2.14.1\caches目录下，创建一个modules-2文件夹，里面会下载很多东西，这个过程很漫长。（小插曲）
 
-这样完了以后，我们的项目就变成gradle项目了，经过我的尝试，这个时候，如果报，这个项目不是主项目错误，那么就把目前的项目都关闭掉，然后重新import 项目（gradle项目），我在这个时候，出现了原先的项目全部变成了java项目这样的问题，别着急，关闭项目，再import一次android 项目，就全部正常了。（这儿的问题又多又烦）
+这样完了以后，我们的项目就变成gradle项目了，经过我的尝试，这个时候，如果报，这个项目不是主项目错误，那么就把目前的项目都关闭掉，然后重新import 项目（gradle项目），我在这个时候，出现了原先的项目全部变成了java项目这样的问题，别着急，关闭项目，再import一次android 项目，就全部正常了。（这儿的问题又多又烦）<br/>
 
-5，我曾经天真的以为，这样以后，就可以直接run项目了，我的分包问题就解决了。。。图样！
+5，我曾经天真的以为，这样以后，就可以直接run项目了，我的分包问题就解决了。。。图样！<br/>
 
 你这个是使用eclipse的run as Android Application和我们没有安装插件，是一样的。
 
 得使用另外一种run的方式，在你的Eclipse->Window找到GradleTasks里面找到你的项目
 
-右击你的项目Open Gradle run Configurations
+右击你的项目Open Gradle run Configurations<br/>
 
 
 
 <img src="http://upload-images.jianshu.io/upload_images/2710037-14fef78d6f7e622a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
-会进入一个配置页面
+会进入一个配置页面<br/>
 
 <img src="http://upload-images.jianshu.io/upload_images/2710037-b18547af38074910.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
 
@@ -132,9 +132,9 @@ Could not find tools.jar. Please check that C:\Program Files\Java\jre1.8.0_45 co
 
 我改成这样，再运行就成功了。
 
-如果我们大家的项目能这么简单的搞定，就没有必要写这个文章了。（有司机，这段路不崎岖）
+如果我们大家的项目能这么简单的搞定，就没有必要写这个文章了。（有司机，这段路不崎岖）<br/>
 
-6，配置分包
+6，配置分包<br/>
 
 关于这个配置，网上太多了，我也拷贝了一份，如果你已经配置好，就直接跳过吧
 
@@ -223,9 +223,9 @@ Launching delegate
 
 
 
-其实到这里，项目使用Android Studio打开，已经可以run了，可是，Eclipse不行，他有他的任性。
+其实到这里，项目使用Android Studio打开，已经可以run了，可是，Eclipse不行，他有他的任性。<br/>
 
-7，遇到的问题
+7，遇到的问题<br/>
 
 我们来讲讲Eclipse的support-v4，太烦人
 
