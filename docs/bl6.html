@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html" charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <link rel="shortcut icon" href="">
-    <title></title>
+    <title>毛神</title>
     <meta name="keywords" content="">
     <meta name="description" content="">
     <link rel="stylesheet" href="css/style.css" />
@@ -29,25 +29,26 @@
     		<div class="main_con_left"></div>
 	    	<div class="main_con_right">
 	    		<div class="header">
-	    			<span height="60">Android自定义View</span>
+	    			<span height="60">Android路径</span>
 	    		</div>
 	    		<div class="article">
-	    			<h1>自定义SeekBar模拟QQ多段录制视频</h1>
+	    			<h1>Android中的sdcard路径问题</h1>
 	    			<div class="tips">
 	    				<span class="time">2016年8月26日11:51:21</span>
 	    				<span class="author"><b>by</b>毛神</span>
 	    			</div>
 	    			<p class="article_con">
-手机qq里面发送小视频有个功能是，分段录制视频，就是录制的时候，可以停下来，然后再接着录。这个功能目前被我们的项目使用到了，于是，我就自定义了一个SeekBar，给录制视频，编辑视频，播放视频使用。
-进度条主要包括两个部分：进度条和可以拖动的图片
-和qq的进度条有点不同的是，我的进度条，到达100%的时候，是没有填充满的，看下图
-<img src="http://upload-images.jianshu.io/upload_images/2710037-92a3d299043367ea.png"/><br/>
-我预留了一个图片的位置给剪切的那个图片。
-当我滑动或者点击图片的时候，我们就要去编辑这几段视频了（图片中有5段视频），比如说我点击了一次剪切图片，就会变成下图：<br/>
-<img src="http://upload-images.jianshu.io/upload_images/2710037-bb8d72814c8e3042.png"/><br/>
-<img src="http://upload-images.jianshu.io/upload_images/2710037-769da649c5fb46ca.png"/><br/>
-图片中有白色的分割线，我们叫断点，每个断点就表示，之前在这个位置录视频的时候暂停过。大致功能就是这样啦。
-去下载资源吧，csdn不用积分的。。<a href="http://download.csdn.net/detail/xiaodousa/9613484" target="_blank">点我CSDN下载资源</a>
+在遇到今天这个问题之前，我一直觉得/sdcard/temp/像这样的路径是没啥问题的，今天发生的问题是，某个手机（华为），安装我的app后，无法下载，检查日志说是，文件路径不存在。<br/>
+
+我的文件路径就是类似与/sdcard/temp/abc.txt这样。一个个路径往上检查，发现，sdcard不存在。<br/>
+
+世界观被颠覆了。<br/>
+
+无奈的情况下，我试试把sdcard改成Environment.getExternalStorageDirectory().getPath()，的确就可以了。不甘心啊，我仔细找原因，为啥会出现这个情况。<br/>
+
+在手机里面找到了内存和存储，默认是被修改过的，是另外安装的一个内存卡；我抱着试试看的态度。。。把内存和存储改成了原来的卡，再测试，居然可以了，sdcard又可以了。<br/>
+
+总结：sdcard这个路径是虚拟的，手机可以默认不带这个路径，也可以带，所以，你使用sdcard的地方换成Environment.getExternalStorageDirectory().getPath()吧，别等到出事了。。。<br/>
 	    			</p>
 	    		</div>
 	    	</div>
