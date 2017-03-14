@@ -227,32 +227,32 @@ Launching delegate
 
 7，遇到的问题<br/>
 
-我们来讲讲Eclipse的support-v4，太烦人
+我们来讲讲Eclipse的support-v4，太烦人<br/>
 
-我们的项目，会引用一些开源框架，比如说silding_menu_library，这个开源项目里面，就包含了support-v4的jar包，然后我们主项目，也有这样的jar包，或者，还有别的需要引用的，也包含这个jar。那么问题来了。当我们assemble的时候，会报包冲突。部分截图如下
+我们的项目，会引用一些开源框架，比如说silding_menu_library，这个开源项目里面，就包含了support-v4的jar包，然后我们主项目，也有这样的jar包，或者，还有别的需要引用的，也包含这个jar。那么问题来了。当我们assemble的时候，会报包冲突。部分截图如下<br/>
 
 
 <img src="http://upload-images.jianshu.io/upload_images/2710037-4c802dd951f3b51c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"/><br/>
 
-意思就是，你那么多项目，都有这个jar包，我打包的时候，冲突了重复了。
+意思就是，你那么多项目，都有这个jar包，我打包的时候，冲突了重复了。<br/>
 
-然后，我就去百度，发现好多人啊，好多人遇到这个问题。解决方案缺很单一，无非是exclude例如all*.exclude group: 'com.android.support', module: 'support-v4'
+然后，我就去百度，发现好多人啊，好多人遇到这个问题。解决方案缺很单一，无非是exclude例如all*.exclude group: 'com.android.support', module: 'support-v4'<br/>
 
-我没有去Android Studio上面去测试了，我只是在Eclipse上面测试，发现，并没有什么用。
+我没有去Android Studio上面去测试了，我只是在Eclipse上面测试，发现，并没有什么用。<br/>
 
-该冲突还是冲突。最终（真累，好几次想要放弃，毕竟Android Studio已经可以运行了），解决方案是，改用provided，如下：
+该冲突还是冲突。最终（真累，好几次想要放弃，毕竟Android Studio已经可以运行了），解决方案是，改用provided，如下：<br/>
 
-silding_menu_library里面的build.gradle这样配置dependencies
+silding_menu_library里面的build.gradle这样配置dependencies<br/>
 
-compile fileTree(dir: 'libs', exclude: ['android-support*.jar'], include: '*.jar')
+compile fileTree(dir: 'libs', exclude: ['android-support*.jar'], include: '*.jar')<br/>
 
-provided files("libs/android-support-v4.jar")
+provided files("libs/android-support-v4.jar")<br/>
 
-含义就是编译的时候，编译support-v4包，但是打包的时候，不要support-v4。
+含义就是编译的时候，编译support-v4包，但是打包的时候，不要support-v4。<br/>
 
-至此，我的大一点的项目，也可以assemble了。从安装gradle到最终assemble，花了3天。（这一段，是重点）
+至此，我的大一点的项目，也可以assemble了。从安装gradle到最终assemble，花了3天。（这一段，是重点）<br/>
 
-以上
+以上<br/>
 	    			</p>
 	    		</div>
 	    	</div>
